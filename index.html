@@ -1,199 +1,143 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>No Scrollbar Heatmap</title>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heatmap Tracker</title>
+  <style>
     html, body {
-        margin: 0;
-        padding: 0;
-        background: transparent;
-        color: #727272;
-        font-family: sans-serif;
-        width: 100%;
-        overflow: hidden;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: sans-serif;
+      overflow: hidden;
     }
-    ::-webkit-scrollbar {
-        display: none;
+
+    .container {
+      width: 1400px;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    #grid {
-        overflow: hidden;
-        width: 100%;
+
+    .grid {
+      display: grid;
+      grid-template-columns: auto repeat(28, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 4px;
     }
-    .chunk {
-        overflow: hidden;
+
+    .day-label {
+      color: #727272;
+      font-size: 10px;
+      text-align: right;
+      padding-right: 4px;
+      line-height: 20px;
     }
-    .row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 4px;
-    }
-    .label {
-        width: 30px;
-        margin-right: 6px;
-        text-align: right;
-        font-size: 12px;
-        color: #727272;
-        flex-shrink: 0;
-    }
+
     .cell {
-        width: 18px;
-        height: 18px;
-        margin-right: 2px;
-        background-color: #000;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      background-color: #111;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
     }
+
     .cell.state-1 {
-        background-color: #c0ff00;
+      background-color: #c0ff00;
     }
+
     .cell.state-2 {
-        background-color: #8759d1;
+      background-color: #8759d1;
     }
+
     .menu {
-        margin: 10px 0;
-        position: relative;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      cursor: pointer;
+      color: #727272;
+      font-size: 20px;
     }
-    .menu-toggle {
-        background: none;
-        border: none;
-        color: #727272;
-        font-size: 20px;
-        cursor: pointer;
-    }
+
     .menu-options {
-        display: none;
-        position: absolute;
-        top: 30px;
-        left: 0;
-        background: #2a2a2a;
-        border: 1px solid #444;
-        padding: 10px;
-        z-index: 10;
+      display: none;
+      position: absolute;
+      top: 30px;
+      left: 10px;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 5px;
     }
+
     .menu-options button {
-        display: block;
-        background: #444;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        margin-bottom: 5px;
-        cursor: pointer;
-        width: 100%;
+      background: none;
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
     }
-</style>
+
+    .menu-options button:hover {
+      background: #333;
+    }
+  </style>
 </head>
 <body>
-    <div class="menu">
-        <button class="menu-toggle" onclick="toggleMenu()">⋮</button>
-        <div class="menu-options" id="menu-options">
-            <button onclick="prevChunk()">← Previous</button>
-            <button onclick="nextChunk()">→ Next</button>
-            <button onclick="resetAll()">Reset</button>
-        </div>
+  <div class="container">
+    <div class="grid" id="grid"></div>
+    <div class="menu" id="menu">⋮</div>
+    <div class="menu-options" id="menuOptions">
+      <button onclick="resetGrid()">Reset</button>
     </div>
-    <div id="grid">
-        <div class="chunk" id="chunk-0" style="display: block;"><div class="row"><div class="label">MON</div><div class="cell" data-doy="006" data-state="0"></div><div class="cell" data-doy="013" data-state="0"></div><div class="cell" data-doy="020" data-state="0"></div><div class="cell" data-doy="027" data-state="0"></div><div class="cell" data-doy="034" data-state="0"></div><div class="cell" data-doy="041" data-state="0"></div><div class="cell" data-doy="048" data-state="0"></div><div class="cell" data-doy="055" data-state="0"></div><div class="cell" data-doy="062" data-state="0"></div><div class="cell" data-doy="069" data-state="0"></div><div class="cell" data-doy="076" data-state="0"></div><div class="cell" data-doy="083" data-state="0"></div><div class="cell" data-doy="090" data-state="0"></div><div class="cell" data-doy="097" data-state="0"></div><div class="cell" data-doy="104" data-state="0"></div><div class="cell" data-doy="111" data-state="0"></div><div class="cell" data-doy="118" data-state="0"></div><div class="cell" data-doy="125" data-state="0"></div><div class="cell" data-doy="132" data-state="0"></div><div class="cell" data-doy="139" data-state="0"></div><div class="cell" data-doy="146" data-state="0"></div><div class="cell" data-doy="153" data-state="0"></div><div class="cell" data-doy="160" data-state="0"></div><div class="cell" data-doy="167" data-state="0"></div><div class="cell" data-doy="174" data-state="0"></div><div class="cell" data-doy="181" data-state="0"></div><div class="cell" data-doy="188" data-state="0"></div><div class="cell" data-doy="195" data-state="0"></div></div>
-<div class="row"><div class="label">TUE</div><div class="cell" data-doy="007" data-state="0"></div><div class="cell" data-doy="014" data-state="0"></div><div class="cell" data-doy="021" data-state="0"></div><div class="cell" data-doy="028" data-state="0"></div><div class="cell" data-doy="035" data-state="0"></div><div class="cell" data-doy="042" data-state="0"></div><div class="cell" data-doy="049" data-state="0"></div><div class="cell" data-doy="056" data-state="0"></div><div class="cell" data-doy="063" data-state="0"></div><div class="cell" data-doy="070" data-state="0"></div><div class="cell" data-doy="077" data-state="0"></div><div class="cell" data-doy="084" data-state="0"></div><div class="cell" data-doy="091" data-state="0"></div><div class="cell" data-doy="098" data-state="0"></div><div class="cell" data-doy="105" data-state="0"></div><div class="cell" data-doy="112" data-state="0"></div><div class="cell" data-doy="119" data-state="0"></div><div class="cell" data-doy="126" data-state="0"></div><div class="cell" data-doy="133" data-state="0"></div><div class="cell" data-doy="140" data-state="0"></div><div class="cell" data-doy="147" data-state="0"></div><div class="cell" data-doy="154" data-state="0"></div><div class="cell" data-doy="161" data-state="0"></div><div class="cell" data-doy="168" data-state="0"></div><div class="cell" data-doy="175" data-state="0"></div><div class="cell" data-doy="182" data-state="0"></div><div class="cell" data-doy="189" data-state="0"></div><div class="cell" data-doy="196" data-state="0"></div></div>
-<div class="row"><div class="label">WED</div><div class="cell" data-doy="008" data-state="0"></div><div class="cell" data-doy="015" data-state="0"></div><div class="cell" data-doy="022" data-state="0"></div><div class="cell" data-doy="029" data-state="0"></div><div class="cell" data-doy="036" data-state="0"></div><div class="cell" data-doy="043" data-state="0"></div><div class="cell" data-doy="050" data-state="0"></div><div class="cell" data-doy="057" data-state="0"></div><div class="cell" data-doy="064" data-state="0"></div><div class="cell" data-doy="071" data-state="0"></div><div class="cell" data-doy="078" data-state="0"></div><div class="cell" data-doy="085" data-state="0"></div><div class="cell" data-doy="092" data-state="0"></div><div class="cell" data-doy="099" data-state="0"></div><div class="cell" data-doy="106" data-state="0"></div><div class="cell" data-doy="113" data-state="0"></div><div class="cell" data-doy="120" data-state="0"></div><div class="cell" data-doy="127" data-state="0"></div><div class="cell" data-doy="134" data-state="0"></div><div class="cell" data-doy="141" data-state="0"></div><div class="cell" data-doy="148" data-state="0"></div><div class="cell" data-doy="155" data-state="0"></div><div class="cell" data-doy="162" data-state="0"></div><div class="cell" data-doy="169" data-state="0"></div><div class="cell" data-doy="176" data-state="0"></div><div class="cell" data-doy="183" data-state="0"></div><div class="cell" data-doy="190" data-state="0"></div><div class="cell" data-doy="197" data-state="0"></div></div>
-<div class="row"><div class="label">THU</div><div class="cell" data-doy="009" data-state="0"></div><div class="cell" data-doy="016" data-state="0"></div><div class="cell" data-doy="023" data-state="0"></div><div class="cell" data-doy="030" data-state="0"></div><div class="cell" data-doy="037" data-state="0"></div><div class="cell" data-doy="044" data-state="0"></div><div class="cell" data-doy="051" data-state="0"></div><div class="cell" data-doy="058" data-state="0"></div><div class="cell" data-doy="065" data-state="0"></div><div class="cell" data-doy="072" data-state="0"></div><div class="cell" data-doy="079" data-state="0"></div><div class="cell" data-doy="086" data-state="0"></div><div class="cell" data-doy="093" data-state="0"></div><div class="cell" data-doy="100" data-state="0"></div><div class="cell" data-doy="107" data-state="0"></div><div class="cell" data-doy="114" data-state="0"></div><div class="cell" data-doy="121" data-state="0"></div><div class="cell" data-doy="128" data-state="0"></div><div class="cell" data-doy="135" data-state="0"></div><div class="cell" data-doy="142" data-state="0"></div><div class="cell" data-doy="149" data-state="0"></div><div class="cell" data-doy="156" data-state="0"></div><div class="cell" data-doy="163" data-state="0"></div><div class="cell" data-doy="170" data-state="0"></div><div class="cell" data-doy="177" data-state="0"></div><div class="cell" data-doy="184" data-state="0"></div><div class="cell" data-doy="191" data-state="0"></div><div class="cell" data-doy="198" data-state="0"></div></div>
-<div class="row"><div class="label">FRI</div><div class="cell" data-doy="010" data-state="0"></div><div class="cell" data-doy="017" data-state="0"></div><div class="cell" data-doy="024" data-state="0"></div><div class="cell" data-doy="031" data-state="0"></div><div class="cell" data-doy="038" data-state="0"></div><div class="cell" data-doy="045" data-state="0"></div><div class="cell" data-doy="052" data-state="0"></div><div class="cell" data-doy="059" data-state="0"></div><div class="cell" data-doy="066" data-state="0"></div><div class="cell" data-doy="073" data-state="0"></div><div class="cell" data-doy="080" data-state="0"></div><div class="cell" data-doy="087" data-state="0"></div><div class="cell" data-doy="094" data-state="0"></div><div class="cell" data-doy="101" data-state="0"></div><div class="cell" data-doy="108" data-state="0"></div><div class="cell" data-doy="115" data-state="0"></div><div class="cell" data-doy="122" data-state="0"></div><div class="cell" data-doy="129" data-state="0"></div><div class="cell" data-doy="136" data-state="0"></div><div class="cell" data-doy="143" data-state="0"></div><div class="cell" data-doy="150" data-state="0"></div><div class="cell" data-doy="157" data-state="0"></div><div class="cell" data-doy="164" data-state="0"></div><div class="cell" data-doy="171" data-state="0"></div><div class="cell" data-doy="178" data-state="0"></div><div class="cell" data-doy="185" data-state="0"></div><div class="cell" data-doy="192" data-state="0"></div><div class="cell" data-doy="199" data-state="0"></div></div>
-<div class="row"><div class="label">SAT</div><div class="cell" data-doy="011" data-state="0"></div><div class="cell" data-doy="018" data-state="0"></div><div class="cell" data-doy="025" data-state="0"></div><div class="cell" data-doy="032" data-state="0"></div><div class="cell" data-doy="039" data-state="0"></div><div class="cell" data-doy="046" data-state="0"></div><div class="cell" data-doy="053" data-state="0"></div><div class="cell" data-doy="060" data-state="0"></div><div class="cell" data-doy="067" data-state="0"></div><div class="cell" data-doy="074" data-state="0"></div><div class="cell" data-doy="081" data-state="0"></div><div class="cell" data-doy="088" data-state="0"></div><div class="cell" data-doy="095" data-state="0"></div><div class="cell" data-doy="102" data-state="0"></div><div class="cell" data-doy="109" data-state="0"></div><div class="cell" data-doy="116" data-state="0"></div><div class="cell" data-doy="123" data-state="0"></div><div class="cell" data-doy="130" data-state="0"></div><div class="cell" data-doy="137" data-state="0"></div><div class="cell" data-doy="144" data-state="0"></div><div class="cell" data-doy="151" data-state="0"></div><div class="cell" data-doy="158" data-state="0"></div><div class="cell" data-doy="165" data-state="0"></div><div class="cell" data-doy="172" data-state="0"></div><div class="cell" data-doy="179" data-state="0"></div><div class="cell" data-doy="186" data-state="0"></div><div class="cell" data-doy="193" data-state="0"></div><div class="cell" data-doy="200" data-state="0"></div></div>
-<div class="row"><div class="label">SUN</div><div class="cell" data-doy="012" data-state="0"></div><div class="cell" data-doy="019" data-state="0"></div><div class="cell" data-doy="026" data-state="0"></div><div class="cell" data-doy="033" data-state="0"></div><div class="cell" data-doy="040" data-state="0"></div><div class="cell" data-doy="047" data-state="0"></div><div class="cell" data-doy="054" data-state="0"></div><div class="cell" data-doy="061" data-state="0"></div><div class="cell" data-doy="068" data-state="0"></div><div class="cell" data-doy="075" data-state="0"></div><div class="cell" data-doy="082" data-state="0"></div><div class="cell" data-doy="089" data-state="0"></div><div class="cell" data-doy="096" data-state="0"></div><div class="cell" data-doy="103" data-state="0"></div><div class="cell" data-doy="110" data-state="0"></div><div class="cell" data-doy="117" data-state="0"></div><div class="cell" data-doy="124" data-state="0"></div><div class="cell" data-doy="131" data-state="0"></div><div class="cell" data-doy="138" data-state="0"></div><div class="cell" data-doy="145" data-state="0"></div><div class="cell" data-doy="152" data-state="0"></div><div class="cell" data-doy="159" data-state="0"></div><div class="cell" data-doy="166" data-state="0"></div><div class="cell" data-doy="173" data-state="0"></div><div class="cell" data-doy="180" data-state="0"></div><div class="cell" data-doy="187" data-state="0"></div><div class="cell" data-doy="194" data-state="0"></div><div class="cell" data-doy="201" data-state="0"></div></div>
-</div><div class="chunk" id="chunk-1" style="display: none;"><div class="row"><div class="label">MON</div><div class="cell" data-doy="202" data-state="0"></div><div class="cell" data-doy="209" data-state="0"></div><div class="cell" data-doy="216" data-state="0"></div><div class="cell" data-doy="223" data-state="0"></div><div class="cell" data-doy="230" data-state="0"></div><div class="cell" data-doy="237" data-state="0"></div><div class="cell" data-doy="244" data-state="0"></div><div class="cell" data-doy="251" data-state="0"></div><div class="cell" data-doy="258" data-state="0"></div><div class="cell" data-doy="265" data-state="0"></div><div class="cell" data-doy="272" data-state="0"></div><div class="cell" data-doy="279" data-state="0"></div><div class="cell" data-doy="286" data-state="0"></div><div class="cell" data-doy="293" data-state="0"></div><div class="cell" data-doy="300" data-state="0"></div><div class="cell" data-doy="307" data-state="0"></div><div class="cell" data-doy="314" data-state="0"></div><div class="cell" data-doy="321" data-state="0"></div><div class="cell" data-doy="328" data-state="0"></div><div class="cell" data-doy="335" data-state="0"></div><div class="cell" data-doy="342" data-state="0"></div><div class="cell" data-doy="349" data-state="0"></div><div class="cell" data-doy="356" data-state="0"></div><div class="cell" data-doy="363" data-state="0"></div><div class="cell" data-doy="005" data-state="0"></div><div class="cell" data-doy="012" data-state="0"></div><div class="cell" data-doy="019" data-state="0"></div><div class="cell" data-doy="026" data-state="0"></div></div>
-<div class="row"><div class="label">TUE</div><div class="cell" data-doy="203" data-state="0"></div><div class="cell" data-doy="210" data-state="0"></div><div class="cell" data-doy="217" data-state="0"></div><div class="cell" data-doy="224" data-state="0"></div><div class="cell" data-doy="231" data-state="0"></div><div class="cell" data-doy="238" data-state="0"></div><div class="cell" data-doy="245" data-state="0"></div><div class="cell" data-doy="252" data-state="0"></div><div class="cell" data-doy="259" data-state="0"></div><div class="cell" data-doy="266" data-state="0"></div><div class="cell" data-doy="273" data-state="0"></div><div class="cell" data-doy="280" data-state="0"></div><div class="cell" data-doy="287" data-state="0"></div><div class="cell" data-doy="294" data-state="0"></div><div class="cell" data-doy="301" data-state="0"></div><div class="cell" data-doy="308" data-state="0"></div><div class="cell" data-doy="315" data-state="0"></div><div class="cell" data-doy="322" data-state="0"></div><div class="cell" data-doy="329" data-state="0"></div><div class="cell" data-doy="336" data-state="0"></div><div class="cell" data-doy="343" data-state="0"></div><div class="cell" data-doy="350" data-state="0"></div><div class="cell" data-doy="357" data-state="0"></div><div class="cell" data-doy="364" data-state="0"></div><div class="cell" data-doy="006" data-state="0"></div><div class="cell" data-doy="013" data-state="0"></div><div class="cell" data-doy="020" data-state="0"></div><div class="cell" data-doy="027" data-state="0"></div></div>
-<div class="row"><div class="label">WED</div><div class="cell" data-doy="204" data-state="0"></div><div class="cell" data-doy="211" data-state="0"></div><div class="cell" data-doy="218" data-state="0"></div><div class="cell" data-doy="225" data-state="0"></div><div class="cell" data-doy="232" data-state="0"></div><div class="cell" data-doy="239" data-state="0"></div><div class="cell" data-doy="246" data-state="0"></div><div class="cell" data-doy="253" data-state="0"></div><div class="cell" data-doy="260" data-state="0"></div><div class="cell" data-doy="267" data-state="0"></div><div class="cell" data-doy="274" data-state="0"></div><div class="cell" data-doy="281" data-state="0"></div><div class="cell" data-doy="288" data-state="0"></div><div class="cell" data-doy="295" data-state="0"></div><div class="cell" data-doy="302" data-state="0"></div><div class="cell" data-doy="309" data-state="0"></div><div class="cell" data-doy="316" data-state="0"></div><div class="cell" data-doy="323" data-state="0"></div><div class="cell" data-doy="330" data-state="0"></div><div class="cell" data-doy="337" data-state="0"></div><div class="cell" data-doy="344" data-state="0"></div><div class="cell" data-doy="351" data-state="0"></div><div class="cell" data-doy="358" data-state="0"></div><div class="cell" data-doy="365" data-state="0"></div><div class="cell" data-doy="007" data-state="0"></div><div class="cell" data-doy="014" data-state="0"></div><div class="cell" data-doy="021" data-state="0"></div><div class="cell" data-doy="028" data-state="0"></div></div>
-<div class="row"><div class="label">THU</div><div class="cell" data-doy="205" data-state="0"></div><div class="cell" data-doy="212" data-state="0"></div><div class="cell" data-doy="219" data-state="0"></div><div class="cell" data-doy="226" data-state="0"></div><div class="cell" data-doy="233" data-state="0"></div><div class="cell" data-doy="240" data-state="0"></div><div class="cell" data-doy="247" data-state="0"></div><div class="cell" data-doy="254" data-state="0"></div><div class="cell" data-doy="261" data-state="0"></div><div class="cell" data-doy="268" data-state="0"></div><div class="cell" data-doy="275" data-state="0"></div><div class="cell" data-doy="282" data-state="0"></div><div class="cell" data-doy="289" data-state="0"></div><div class="cell" data-doy="296" data-state="0"></div><div class="cell" data-doy="303" data-state="0"></div><div class="cell" data-doy="310" data-state="0"></div><div class="cell" data-doy="317" data-state="0"></div><div class="cell" data-doy="324" data-state="0"></div><div class="cell" data-doy="331" data-state="0"></div><div class="cell" data-doy="338" data-state="0"></div><div class="cell" data-doy="345" data-state="0"></div><div class="cell" data-doy="352" data-state="0"></div><div class="cell" data-doy="359" data-state="0"></div><div class="cell" data-doy="001" data-state="0"></div><div class="cell" data-doy="008" data-state="0"></div><div class="cell" data-doy="015" data-state="0"></div><div class="cell" data-doy="022" data-state="0"></div><div class="cell" data-doy="029" data-state="0"></div></div>
-<div class="row"><div class="label">FRI</div><div class="cell" data-doy="206" data-state="0"></div><div class="cell" data-doy="213" data-state="0"></div><div class="cell" data-doy="220" data-state="0"></div><div class="cell" data-doy="227" data-state="0"></div><div class="cell" data-doy="234" data-state="0"></div><div class="cell" data-doy="241" data-state="0"></div><div class="cell" data-doy="248" data-state="0"></div><div class="cell" data-doy="255" data-state="0"></div><div class="cell" data-doy="262" data-state="0"></div><div class="cell" data-doy="269" data-state="0"></div><div class="cell" data-doy="276" data-state="0"></div><div class="cell" data-doy="283" data-state="0"></div><div class="cell" data-doy="290" data-state="0"></div><div class="cell" data-doy="297" data-state="0"></div><div class="cell" data-doy="304" data-state="0"></div><div class="cell" data-doy="311" data-state="0"></div><div class="cell" data-doy="318" data-state="0"></div><div class="cell" data-doy="325" data-state="0"></div><div class="cell" data-doy="332" data-state="0"></div><div class="cell" data-doy="339" data-state="0"></div><div class="cell" data-doy="346" data-state="0"></div><div class="cell" data-doy="353" data-state="0"></div><div class="cell" data-doy="360" data-state="0"></div><div class="cell" data-doy="002" data-state="0"></div><div class="cell" data-doy="009" data-state="0"></div><div class="cell" data-doy="016" data-state="0"></div><div class="cell" data-doy="023" data-state="0"></div><div class="cell" data-doy="030" data-state="0"></div></div>
-<div class="row"><div class="label">SAT</div><div class="cell" data-doy="207" data-state="0"></div><div class="cell" data-doy="214" data-state="0"></div><div class="cell" data-doy="221" data-state="0"></div><div class="cell" data-doy="228" data-state="0"></div><div class="cell" data-doy="235" data-state="0"></div><div class="cell" data-doy="242" data-state="0"></div><div class="cell" data-doy="249" data-state="0"></div><div class="cell" data-doy="256" data-state="0"></div><div class="cell" data-doy="263" data-state="0"></div><div class="cell" data-doy="270" data-state="0"></div><div class="cell" data-doy="277" data-state="0"></div><div class="cell" data-doy="284" data-state="0"></div><div class="cell" data-doy="291" data-state="0"></div><div class="cell" data-doy="298" data-state="0"></div><div class="cell" data-doy="305" data-state="0"></div><div class="cell" data-doy="312" data-state="0"></div><div class="cell" data-doy="319" data-state="0"></div><div class="cell" data-doy="326" data-state="0"></div><div class="cell" data-doy="333" data-state="0"></div><div class="cell" data-doy="340" data-state="0"></div><div class="cell" data-doy="347" data-state="0"></div><div class="cell" data-doy="354" data-state="0"></div><div class="cell" data-doy="361" data-state="0"></div><div class="cell" data-doy="003" data-state="0"></div><div class="cell" data-doy="010" data-state="0"></div><div class="cell" data-doy="017" data-state="0"></div><div class="cell" data-doy="024" data-state="0"></div><div class="cell" data-doy="031" data-state="0"></div></div>
-<div class="row"><div class="label">SUN</div><div class="cell" data-doy="208" data-state="0"></div><div class="cell" data-doy="215" data-state="0"></div><div class="cell" data-doy="222" data-state="0"></div><div class="cell" data-doy="229" data-state="0"></div><div class="cell" data-doy="236" data-state="0"></div><div class="cell" data-doy="243" data-state="0"></div><div class="cell" data-doy="250" data-state="0"></div><div class="cell" data-doy="257" data-state="0"></div><div class="cell" data-doy="264" data-state="0"></div><div class="cell" data-doy="271" data-state="0"></div><div class="cell" data-doy="278" data-state="0"></div><div class="cell" data-doy="285" data-state="0"></div><div class="cell" data-doy="292" data-state="0"></div><div class="cell" data-doy="299" data-state="0"></div><div class="cell" data-doy="306" data-state="0"></div><div class="cell" data-doy="313" data-state="0"></div><div class="cell" data-doy="320" data-state="0"></div><div class="cell" data-doy="327" data-state="0"></div><div class="cell" data-doy="334" data-state="0"></div><div class="cell" data-doy="341" data-state="0"></div><div class="cell" data-doy="348" data-state="0"></div><div class="cell" data-doy="355" data-state="0"></div><div class="cell" data-doy="362" data-state="0"></div><div class="cell" data-doy="004" data-state="0"></div><div class="cell" data-doy="011" data-state="0"></div><div class="cell" data-doy="018" data-state="0"></div><div class="cell" data-doy="025" data-state="0"></div><div class="cell" data-doy="032" data-state="0"></div></div>
-</div><div class="chunk" id="chunk-2" style="display: none;"><div class="row"><div class="label">MON</div><div class="cell" data-doy="033" data-state="0"></div><div class="cell" data-doy="040" data-state="0"></div><div class="cell" data-doy="047" data-state="0"></div><div class="cell" data-doy="054" data-state="0"></div><div class="cell" data-doy="061" data-state="0"></div></div>
-<div class="row"><div class="label">TUE</div><div class="cell" data-doy="034" data-state="0"></div><div class="cell" data-doy="041" data-state="0"></div><div class="cell" data-doy="048" data-state="0"></div><div class="cell" data-doy="055" data-state="0"></div></div>
-<div class="row"><div class="label">WED</div><div class="cell" data-doy="035" data-state="0"></div><div class="cell" data-doy="042" data-state="0"></div><div class="cell" data-doy="049" data-state="0"></div><div class="cell" data-doy="056" data-state="0"></div></div>
-<div class="row"><div class="label">THU</div><div class="cell" data-doy="036" data-state="0"></div><div class="cell" data-doy="043" data-state="0"></div><div class="cell" data-doy="050" data-state="0"></div><div class="cell" data-doy="057" data-state="0"></div></div>
-<div class="row"><div class="label">FRI</div><div class="cell" data-doy="037" data-state="0"></div><div class="cell" data-doy="044" data-state="0"></div><div class="cell" data-doy="051" data-state="0"></div><div class="cell" data-doy="058" data-state="0"></div></div>
-<div class="row"><div class="label">SAT</div><div class="cell" data-doy="038" data-state="0"></div><div class="cell" data-doy="045" data-state="0"></div><div class="cell" data-doy="052" data-state="0"></div><div class="cell" data-doy="059" data-state="0"></div></div>
-<div class="row"><div class="label">SUN</div><div class="cell" data-doy="039" data-state="0"></div><div class="cell" data-doy="046" data-state="0"></div><div class="cell" data-doy="053" data-state="0"></div><div class="cell" data-doy="060" data-state="0"></div></div>
-</div>
-    </div>
+  </div>
 
-<script>
-    const cells = document.querySelectorAll('.cell');
-    const saveKey = "heatmap-tracker-clean-scroll";
-    const chunks = document.querySelectorAll('.chunk');
-    let currentChunk = 0;
+  <script>
+    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    const weeks = 28;
+    const grid = document.getElementById("grid");
 
-    function toggleMenu() {
-        const menu = document.getElementById("menu-options");
-        menu.style.display = (menu.style.display === "block") ? "none" : "block";
-    }
+    // Build grid
+    days.forEach(day => {
+      const label = document.createElement("div");
+      label.className = "day-label";
+      label.innerText = day;
+      grid.appendChild(label);
 
-    function showChunk(index) {
-        chunks.forEach((chunk, i) => {
-            chunk.style.display = i === index ? "block" : "none";
-        });
-    }
+      for (let w = 0; w < weeks; w++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.dataset.state = 0;
 
-    function nextChunk() {
-        if (currentChunk < chunks.length - 1) {
-            currentChunk++;
-            showChunk(currentChunk);
-        }
-    }
-
-    function prevChunk() {
-        if (currentChunk > 0) {
-            currentChunk--;
-            showChunk(currentChunk);
-        }
-    }
-
-    function resetAll() {
-        cells.forEach(cell => {
-            cell.classList.remove("state-1", "state-2");
-            cell.dataset.state = "0";
-        });
-        localStorage.removeItem(saveKey);
-    }
-
-    function loadState() {
-        const saved = JSON.parse(localStorage.getItem(saveKey) || "{}");
-        cells.forEach(cell => {
-            const state = saved[cell.dataset.doy] || 0;
-            cell.dataset.state = state;
-            if (state == 1) cell.classList.add("state-1");
-            else if (state == 2) cell.classList.add("state-2");
-        });
-    }
-
-    function saveState() {
-        const state = {};
-        cells.forEach(cell => {
-            const s = parseInt(cell.dataset.state || 0);
-            if (s > 0) {
-                state[cell.dataset.doy] = s;
-            }
-        });
-        localStorage.setItem(saveKey, JSON.stringify(state));
-    }
-
-    cells.forEach(cell => {
         cell.addEventListener("click", () => {
-            let current = parseInt(cell.dataset.state || 0);
-            current = (current + 1) % 3;
-            cell.dataset.state = current;
-            cell.classList.remove("state-1", "state-2");
-            if (current === 1) cell.classList.add("state-1");
-            else if (current === 2) cell.classList.add("state-2");
-            saveState();
+          let state = parseInt(cell.dataset.state);
+          state = (state + 1) % 3;
+          cell.dataset.state = state;
+          cell.className = "cell" + (state > 0 ? ` state-${state}` : "");
         });
+
+        grid.appendChild(cell);
+      }
     });
 
-    showChunk(currentChunk);
-    loadState();
-</script>
+    function resetGrid() {
+      document.querySelectorAll(".cell").forEach(cell => {
+        cell.dataset.state = 0;
+        cell.className = "cell";
+      });
+    }
+
+    // Menu
+    const menu = document.getElementById("menu");
+    const menuOptions = document.getElementById("menuOptions");
+
+    menu.addEventListener("click", () => {
+      menuOptions.style.display = menuOptions.style.display === "block" ? "none" : "block";
+    });
+  </script>
 </body>
 </html>
