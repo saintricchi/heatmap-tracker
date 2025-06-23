@@ -1,143 +1,82 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Heatmap Tracker</title>
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
       background: transparent;
-      font-family: sans-serif;
       overflow: hidden;
     }
-
     .container {
-      width: 1400px;
-      height: 320px;
       display: flex;
       align-items: center;
       justify-content: center;
+      height: 100vh;
+      width: 100vw;
     }
-
-    .grid {
+    .heatmap {
       display: grid;
       grid-template-columns: auto repeat(28, 1fr);
-      grid-template-rows: repeat(7, 1fr);
       gap: 4px;
+      padding: 10px;
+      background-color: transparent;
     }
-
-    .day-label {
+    .day {
       color: #727272;
+      font-family: sans-serif;
       font-size: 10px;
       text-align: right;
       padding-right: 4px;
-      line-height: 20px;
+      line-height: 1.4;
     }
-
     .cell {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       background-color: #111;
-      border-radius: 4px;
+      border-radius: 3px;
+      cursor: pointer;
       transition: background-color 0.2s ease;
-    }
-
-    .cell.state-1 {
-      background-color: #c0ff00;
-    }
-
-    .cell.state-2 {
-      background-color: #8759d1;
-    }
-
-    .menu {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      cursor: pointer;
-      color: #727272;
-      font-size: 20px;
-    }
-
-    .menu-options {
-      display: none;
-      position: absolute;
-      top: 30px;
-      left: 10px;
-      background: #1e1e1e;
-      border: 1px solid #444;
-      border-radius: 4px;
-      padding: 5px;
-    }
-
-    .menu-options button {
-      background: none;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      width: 100%;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .menu-options button:hover {
-      background: #333;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="grid" id="grid"></div>
-    <div class="menu" id="menu">⋮</div>
-    <div class="menu-options" id="menuOptions">
-      <button onclick="resetGrid()">Reset</button>
+    <div class="heatmap" id="heatmap">
+      <div class="day">MON</div>
+      <div class="day">TUE</div>
+      <div class="day">WED</div>
+      <div class="day">THU</div>
+      <div class="day">FRI</div>
+      <div class="day">SAT</div>
+      <div class="day">SUN</div>
     </div>
   </div>
 
   <script>
-    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-    const weeks = 28;
-    const grid = document.getElementById("grid");
+    const heatmap = document.getElementById("heatmap");
+    const states = ["#c0ff00", "#8759d1", "#111"];
 
-    // Build grid
-    days.forEach(day => {
-      const label = document.createElement("div");
-      label.className = "day-label";
-      label.innerText = day;
-      grid.appendChild(label);
-
-      for (let w = 0; w < weeks; w++) {
+    for (let col = 0; col < 28; col++) {
+      for (let row = 0; row < 7; row++) {
         const cell = document.createElement("div");
         cell.className = "cell";
         cell.dataset.state = 0;
 
         cell.addEventListener("click", () => {
-          let state = parseInt(cell.dataset.state);
-          state = (state + 1) % 3;
-          cell.dataset.state = state;
-          cell.className = "cell" + (state > 0 ? ` state-${state}` : "");
+          let current = parseInt(cell.dataset.state);
+          current = (current + 1) % states.length;
+          cell.dataset.state = current;
+          cell.style.backgroundColor = states[current];
         });
 
-        grid.appendChild(cell);
+        heatmap.appendChild(cell);
       }
-    });
-
-    function resetGrid() {
-      document.querySelectorAll(".cell").forEach(cell => {
-        cell.dataset.state = 0;
-        cell.className = "cell";
-      });
     }
-
-    // Menu
-    const menu = document.getElementById("menu");
-    const menuOptions = document.getElementById("menuOptions");
-
-    menu.addEventListener("click", () => {
-      menuOptions.style.display = menuOptions.style.display === "block" ? "none" : "block";
-    });
   </script>
 </body>
 </html>
